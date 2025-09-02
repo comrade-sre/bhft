@@ -1,0 +1,17 @@
+- name: process current partition
+  ansible.builtin.debug:
+    msg: "{{ partition }}"
+- name: create luks container
+  community.crypto.luks_device:
+    device: "/dev/{{ partition.device }}"
+    state: opened
+    keyfile: "{{ keyfile_path }}"
+    name: "{{ partition.name }}"
+    type: "{{ partition.luks_type }}"
+  ignore_errors: True
+- name: create filesystem
+  community.general.filesystem:
+    fstype: "{{ fs_type }}"
+    dev: "/dev/mapper/{{ partition.name }}"
+    state: present
+  ignore_errors: True

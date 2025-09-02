@@ -1,0 +1,24 @@
+- name: check keyfile 
+  ansible.builtin.stat:
+    path: "{{ keyfile_path }}"
+  register: keyfile
+
+- name: create directory for luks
+  ansible.builtin.file:
+    path: "{{ keyfile_path | dirname }}"
+    state: directory
+    mode: "0755"
+
+- name: generate luks keyfile
+  ansible.builtin.command:
+    cmd: "dd if=/dev/urandom of={{ keyfile_path }} bs=1024 count=8"
+  args:
+    creates: "{{ keyfile_path }}"
+  when: not keyfile.stat.exists
+
+- name: set permissions on luks key
+  ansible.builtin.file:
+    path: "{{ keyfile_path }}"
+    owner: root
+    group: root
+    mode: "0600"

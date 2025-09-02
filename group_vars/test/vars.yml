@@ -1,0 +1,21 @@
+---
+# packages to install
+packages:
+  - parted
+  - cryptsetup
+# vars for device partition
+device_for_partition: "xvdf"
+partition_number: 1
+fs_type: "ext4"
+# vars for devices to encrypt
+to_encrypt:
+  - name: luks-
+    device: "{{ device_for_partition }}{{ partition_number }}"
+    luks_type: luks2
+  - name: luks-2
+    device: "xvda"
+    partition_number: 14
+    luks_type: luks1
+keyfile_path: "/etc/cryptokey/key"
+
+...

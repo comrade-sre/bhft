@@ -1,0 +1,42 @@
+---
+- name: ensure that the cryptsetup is installed
+  ansible.builtin.package:
+    name: cryptsetup
+    state: present
+  loop: "{{ packages }}"
+
+- name: check if the disk exists
+  ansible.builtin.stat:
+    path: "{{ item  }}"
+  loop:
+    - "/dev/{{ device_for_partition }}"
+    - "/dev/{{ to_encrypt[1].device }}"
+  failed_when: not disk.stat.exists
+  register: disk
+
+- name: check size of existing partition
+  community.general.parted:
+    device: "/dev/{{ to_encrypt[1].device }}"
+    number: "{{ to_encrypt[1].partition_number }}"
+    unit: "KiB"
+  register: part_info
+
+- name: print
+  debug:
+    msg: "Warning, existing partition {{ to_encrypt[1].device }} is too small: {{ part_info.partitions[0].size }}KiB"
+  when: part_info.partitions[0].size < 20480
+
+
+- name: include partition creating task
+  ansible.builtin.include_tasks: partition.yml
+
+- name: create keyfile
+  ansible.builtin.include_tasks: keyfile.yml
+
+- name: encryption loop
+  ansible.builtin.include_tasks: process_partitions.yml
+  loop: "{{ to_encrypt }}"
+  loop_control:
+    loop_var: partition
+
+...

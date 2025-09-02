@@ -1,0 +1,17 @@
+- name: create partion on disk
+  community.general.parted:
+    device: "/dev/{{ device_for_partition }}"
+    name: "{{ partition_name }}"
+    number: "{{ partition_number }}"
+    state: present
+    label: gpt
+    fs_type: "{{ fs_type }}"
+    part_start: "{{ part_start }}"
+    part_end: "{{ part_end }}"
+  register: partition_created
+- name: display failure
+  ansible.builtin.debug:
+    msg: >
+      Failed to create partition {{ device_for_partition }}{{ partition_number }}
+      check settings. {{ partition_created.msg }}
+  when: partition_created.failed    

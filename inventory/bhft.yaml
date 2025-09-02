@@ -1,0 +1,5 @@
+[test]
+test_ubuntu ansible_host=63.178.170.228 ansible_user=ubuntu 
+[test:vars]
+partition_name="encryptme"
+
