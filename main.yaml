@@ -26,6 +26,9 @@
             msg: "interface enX0 was successfully renamed to net0"
           when: rename.changed
       tags: rename_int    
+    - name: cpu governor
+      shell: echo performance | tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor
+      tags: governor
     - name: print cores
       debug:
         msg: " number of cpu core: {{ ansible_processor_vcpus }}, number of threads per core: {{ ansible_processor_threads_per_core }}"    

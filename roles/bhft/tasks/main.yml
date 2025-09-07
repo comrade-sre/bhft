@@ -1,7 +1,7 @@
 ---
 - name: ensure that the cryptsetup is installed
   ansible.builtin.package:
-    name: cryptsetup
+    name: {{ item }}
     state: present
   loop: "{{ packages }}"
 
